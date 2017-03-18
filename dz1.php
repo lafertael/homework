@@ -2,7 +2,7 @@
 
 //1. Дана строка 'PHP'. Сделайте из нее строку 'php'.
 $exercise_1 = 'PHP';
-echo(mb_strtolower($exercise_1));
+echo mb_strtolower($exercise_1);
 
 //2. Дана переменная $str, в которой находится текст сообщения, который отправляется в Twitter API,
 // однако твиттер имеет ограничение на длинну сообщения в 150 символов. Преобразовать строку
@@ -11,19 +11,20 @@ echo(mb_strtolower($exercise_1));
 
 $exercise_2 = 'To be happy with a man you must understand him a lot and love him a little.
  To be happy with a woman you must love her a lot and not try to understand her at all.';
-$symbols = str_split($exercise_2);
-$result = count($symbols);
-if ($result <= 150) {
+$symbols = strlen($exercise_2);
+if ($symbols <= 150) {
     echo $exercise_2;
 } else {
-    echo($rest = mb_substr($exercise_2, 0, 150) . "...");
+    echo $rest = mb_substr($exercise_2, 0, 147) . "...";
 }
 
 //3.  В переменной $date лежит дата в формате '2013-12-31'. Преобразуйте эту дату в формат '31.12.2013' .
 $date = '2013-12-31';
 $DateOne = explode("-", $date);
-print_r($DateOne);
-echo $DateOne[2] . "." . $DateOne[1] . "." . $DateOne[0];
+$DateOne1 = array_reverse($DateOne);
+$DateOne2 = implode(".", $DateOne1);
+echo $DateOne2;
+//echo $DateOne[2] . "." . $DateOne[1] . "." . $DateOne[0];
 
 //4. Описать матрицу 3х3, произвести операцию транспонирования матрицы.
 
@@ -33,17 +34,15 @@ for ($i = 0; $i <= 2; $i++) {
         $array[$i][$j] = $array[$j][$i];
     }
 }
-
 print_r($array);
 
 //5. Дан массив чисел (например, Фибоначчи) .
 //Организовать проверку является ли вводимое пользователем числом Фибоначчи (вхождение в заданный массив).
 $fibonacci = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
 $Vvedi = 6;
-if (in_array($Vvedi, $fibonacci)){
-echo 'Это число Фибоначчи';
-}
-else {
+if (in_array($Vvedi, $fibonacci)) {
+    echo 'Это число Фибоначчи';
+} else {
     echo 'Это не число Фибоначчи!';
 }
 
