@@ -4,8 +4,6 @@
 var Elementary_calc = function () {
 
     var res = 0;
-
-
     this.sum = function (first, second) {
         res = first + second;
         console.log(res);
@@ -33,7 +31,6 @@ var Elementary_calc = function () {
 
 };
 
-
 var Advanced_calc = function () {
     Elementary_calc.call(this);
     this.square_root = function (first) {
@@ -57,7 +54,3 @@ var Advanced_calc = function () {
         return this;
     }
 };
-
-elementary_calc.min(3, 6).sum(5, 7).min(10, 8);
-advanced_calc.sinus(1);
-advanced_calc.sum(23, 5);
