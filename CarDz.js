@@ -28,14 +28,11 @@ function Car(power) {
     var totalAmount = 0;
     Machine.apply(self, arguments);
 
-
     this.setFuelAmount = function (amount) {
-
 
         if (amount <= 0) {
             throw new Error('Залейте положительное кол-во бензина!')
         }
-
         if (amount > FUEL_TANK) {
             throw new Error("Нельзя залить более 40 л.")
         }
@@ -76,9 +73,15 @@ function Car(power) {
 
         if (fuelAmount <= 0.1) {
             clearInterval(self.intervalID);
+            console.log("Бензин закончился");
         } else {
+            if(fuelAmount<10){
+                console.log("Осталось мало бензина!!");
+                fuelAmount -= fuelAmount;
+            }else{
             fuelAmount -= CONSUMPTION;
-            console.log(fuelAmount);
+            console.log(fuelAmount)
+            }
         }
     }
 
@@ -88,8 +91,8 @@ function Car(power) {
         this.intervalID = setInterval(interval, 1000);
 
         if (this._enable) {
-            if (fuelAmount <= 0) {
-                console.log("Мы не можем ехать, в баке недостаточно бензина!")
+            if (fuelAmount <= 0.1) {
+                throw new Error ("Мы не можем ехать, в баке недостаточно бензина!");
             } else {
                 this.timeoutID = setTimeout(stopRide, getTimeOfRide())
             }
@@ -113,8 +116,7 @@ function Car(power) {
             console.log("Авто и так остановлено");
         }
     };
-    ////тут вопрос??????????????///
-
+    
     oldEnableEngine = this.enableEngine;
     this.enableEngine = function () {
         console.log("\n Двигатель заведен.");
