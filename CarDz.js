@@ -5,36 +5,40 @@
 "use strict";
 
 function Machine() {
-    this._enable = false;
+    this._isEnabled = false;
 
     this.enableEngine = function () {
-        this._enable = true;
-        return this._enable;
+        this._isEnabled = true;
+        return this._isEnabled;
     };
     this.disableEngine = function () {
-        this._enable = false;
-        return this._enable;
+        this._isEnabled = false;
+        return this._isEnabled;
     }
 }
 
 function Car(power) {
-
     var CONSUMPTION = 10;
     var FUEL_TANK = 40;
     var self = this;
     var fuelAmount = 0;
     var oldEnableEngine;
-    var isRunning1 = false;
+    var isItGoing = false;
     var totalAmount = 0;
+    var distance = 0;
+    this._beep = 0;
+    this._beepStatus = true;
+    var carRepairStatus = false;
+
     Machine.apply(self, arguments);
 
     this.setFuelAmount = function (amount) {
 
-        if (amount <= 0) {
+        if (amount <= 0 || amount === undefined) {
             throw new Error('Залейте положительное кол-во бензина!')
         }
         if (amount > FUEL_TANK) {
-            throw new Error("Нельзя залить более 40 л.")
+            throw new Error("Нельзя залить более" + FUEL_TANK + "л.")
         }
         totalAmount = fuelAmount + amount;
         if (totalAmount > FUEL_TANK) {
@@ -53,15 +57,13 @@ function Car(power) {
     }
 
     function stopRide() {
-
         console.log('Мы приехали через ' + getTimeOfRide() / 1000 + ' с.');
-        isRunning1 = false;
+        isItGoing = false;
     }
 
-
-    this.isRunning = function () {
-
-        if (isRunning1 === false) {
+    this.isInMotion = function () {
+        
+        if (isItGoing === false) {
             console.log("Машина стоит на месте");
         }
         else {
@@ -69,65 +71,136 @@ function Car(power) {
         }
     };
 
-    function interval() {
-
+    function useOfFuel() {
+        checkDistance();
+        
         if (fuelAmount <= 0.1) {
             clearInterval(self.intervalID);
-            console.log("Бензин закончился");
+            isItGoing = false;
         } else {
-            if(fuelAmount<10){
+            
+            if (fuelAmount < 10) {
                 console.log("Осталось мало бензина!!");
                 fuelAmount -= fuelAmount;
-            }else{
-            fuelAmount -= CONSUMPTION;
-            console.log(fuelAmount)
+            } else {
+                fuelAmount -= CONSUMPTION;
+                distance++;
+                console.log(fuelAmount)
             }
         }
     }
 
     this.ride = function () {
-
-        isRunning1 = true;
-        this.intervalID = setInterval(interval, 1000);
-
-        if (this._enable) {
-            if (fuelAmount <= 0.1) {
-                throw new Error ("Мы не можем ехать, в баке недостаточно бензина!");
-            } else {
-                this.timeoutID = setTimeout(stopRide, getTimeOfRide())
-            }
+        checkCarCondition();
+        
+        if (this._isEnabled) {
+            checkFuel();
+            isItGoing = true;
+            this.intervalID = setInterval(useOfFuel, 1000);
+            this.timeoutID = setTimeout(stopRide, getTimeOfRide());
         }
         else {
             console.log("Заведите двигатель!")
         }
-
     };
 
-    this.stopDriving = function () {
+    function checkCarCondition() {
+        
+        if (carRepairStatus === true) {
+            throw new Error("Вы должны починить машину!");
+        }
+    }
 
-        if (isRunning1 === true) {
-            isRunning1 = false;
-            clearTimeout(this.timeoutID);
+    function checkFuel() {
+        
+        if (fuelAmount <= 0.1) {
+            throw new Error("Мы не можем ехать, в баке недостаточно бензина!");
+        }
+    }
+
+    function checkDistance() {
+        
+        if (distance % 5 === 0 && distance > 1) {
+            carRepairStatus = true;
+            console.log("Машина Сломана! Почините ее!");
+            self.stopDriving();
+        }
+    }
+
+    this.repairCar = function () {
+        fuelAmount = 0;
+        
+        if (carRepairStatus === false) {
+            console.log("Ремонт не требуется. Авто в порядке.")
+        } else {
+            carRepairStatus = false;
+            console.log("Ремонт авто окончен.")
+        }
+    };
+
+    this.totalDistance = function () {
+        return distance;
+    };
+
+    function oncePassedDistance() {
+        return ((totalAmount - fuelAmount) / CONSUMPTION);
+    }
+
+    function remainingPath() {
+        return (fuelAmount / 10);
+    }
+
+    this.stopDriving = function () {
+        
+        if (isItGoing === true) {
+            isItGoing = false;
+            this._isEnabled = false;
             clearInterval(this.intervalID);
-            console.log("Авто остановлено. Вы проехали " + ((totalAmount - fuelAmount) / 10) +
-                " км. Вы можете проехать еще " + getTimeOfRide() / 1000 + " км. у вас осталось " + fuelAmount + " литров")
+            clearTimeout(this.timeoutID);
+            console.log("Авто остановлено. Двигатель заглушен. Вы проехали " + oncePassedDistance() +
+                " км. Вы можете проехать еще " + remainingPath() + " км. у вас осталось " + fuelAmount + " литров")
         }
         else {
             console.log("Авто и так остановлено");
         }
     };
-    
-    oldEnableEngine = this.enableEngine;
-    this.enableEngine = function () {
-        console.log("\n Двигатель заведен.");
-        this._enable = true;
-    };
-
     console.log("Авто готово: мощность  " + power + 'л.с. \nВ баке: ' + fuelAmount + ' л.');
 }
+
+
+Car.prototype.makeBeep = function () {
+
+    if (this._beep === 5) {
+        console.log("Клаксон сломан, замените его.");
+        this._beepStatus = false;
+    }
+    else {
+        console.log("Beep, beep!!!");
+        this._beep++;
+    }
+};
+
+Car.prototype.repareBeep = function () {
+    if (this._beepStatus === true) {
+        console.log("Ремонт не требуется. Клаксон в порядке.")
+    } else {
+        this._beepStatus = true;
+        this._beep = 0;
+        console.log("Ремонт окончен.")
+    }
+};
+
+Car.prototype.checkEngine = function () {
+    if (this._isEnabled === true) {
+        console.log("двигатель заведен");
+    }
+    else {
+        console.log("двигатель заглушен");
+    }
+};
 
 var car = new Car(100);
 car.setFuelAmount(40);
 car.enableEngine();
 car.ride();
-car.stopDriving();
+
