@@ -1,0 +1,17 @@
+#slider{
+    margin: 0 auto;
+
+
+}
+#sliderDiv{
+    width: 500px;
+    margin: 0 auto;
+}
+
+
+.kek:hover {
+    -webkit-transform: scale(2);
+    -ms-transform: scale(2);
+    transform: scale(2);
+    transition-duration: .1s;
+}
